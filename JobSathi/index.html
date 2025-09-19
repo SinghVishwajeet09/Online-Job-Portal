@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JobSathi - Find Your Dream Job</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="job-text">Job</span><span class="sathi-text">Sathi</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#jobs">Jobs</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            <div class="auth-links" id="authLinks">
+                <button class="login-btn" onclick="openModal('loginModal')">Login</button>
+                <button class="register-btn" onclick="openModal('registerModal')">Register</button>
+            </div>
+            <div class="user-profile" id="userProfile" style="display:none;">
+                <div class="user-avatar" id="userAvatar"></div>
+                <span class="user-name" id="userName"></span>
+                <div class="user-dropdown">
+                   <a href="profile.php">Profile</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                   
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Find your dream job now</h1>
+                <p>Authentic Jobs for you to explore</p>
+                <div class="search-container">
+                    <input type="text" id="jobSearch" placeholder="Search for jobs, companies..." />
+                    <button onclick="searchJobs()"><i class="fas fa-search"></i> Search</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Job Listings Section -->
+        <section class="job-listings" id="jobs">
+            <div class="container">
+                <h2 class="section-title">Featured Job Categories</h2>
+                
+                <!-- Add these elements for filtering -->
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterJobs('all', this)">All Jobs</button>
+                    <button class="filter-btn" onclick="filterJobs('tech', this)">Tech</button>
+                    <button class="filter-btn" onclick="filterJobs('marketing', this)">Marketing</button>
+                    <button class="filter-btn" onclick="filterJobs('finance', this)">Finance</button>
+                </div>
+                
+                <!-- These are missing elements needed to display jobs -->
+                <div id="loadingState" class="loading-state">
+                    <div class="loader"></div>
+                    <p>Loading jobs...</p>
+                </div>
+                
+                <div id="errorState" class="error-state" style="display: none;">
+                    <h3 id="errorMessage">Error loading jobs</h3>
+                    <p id="errorDetail"></p>
+                    <button onclick="filterJobs('all', document.querySelector('.filter-btn.active'))">Retry</button>
+                </div>
+                
+                <div id="jobContainer" class="job-container"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 JobSathi. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('loginModal')">&times;</span>
+        <h2>Login</h2>
+        <form onsubmit="loginUser(event)">
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</div>
+
+<!-- Register Modal -->
+<div id="registerModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('registerModal')">&times;</span>
+        <h2>Register</h2>
+        <form onsubmit="registerUser(event)">
+            <input type="text" id="registerName" placeholder="Full Name" required>
+            <input type="email" id="registerEmail" placeholder="Email" required>
+            <input type="text" id="registerPhone" placeholder="Phone" required>
+            <input type="password" id="registerPassword" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</div>
+
+    <!-- Application Modal -->
+    <div id="applicationModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('applicationModal')">&times;</button>
+            <h2 id="applicationTitle">Apply for Job</h2>
+            <form id="applicationForm" onsubmit="submitApplication(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="applicantName">Full Name</label>
+                    <input type="text" id="applicantName" required/>
+                </div>
+                <div class="form-group">
+                    <label for="applicantEmail">Email</label>
+                    <input type="email" id="applicantEmail" required/>
+                </div>
+                <div class="form-group">
+                    <label for="applicantPhone">Phone</label>
+                    <input type="tel" id="applicantPhone" required/>
+                </div>
+                <div class="form-group">
+                    <label for="resume">Resume (PDF, DOC, DOCX)</label>
+                    <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required/>
+                </div>
+                <div class="form-group">
+                    <label for="coverLetter">Cover Letter (Optional)</label>
+                    <textarea id="coverLetter" rows="4"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Scripts
+    <script src="config.js"></script>
+    <script src="script.js"></script> -->
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Chatbot and Toggle (inside body, before </body>) -->
+    <div id="chatbot" style="display: none;">
+      <div id="chat-header">JobSathi Assistant</div>
+      <div id="chat-body"></div>
+      <input type="text" id="chat-input" placeholder="Type your message..." />
+    </div>
+    <div id="chat-toggle">💬</div>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggle = document.getElementById('chat-toggle');
+      const chatbot = document.getElementById('chatbot');
+      const input = document.getElementById('chat-input');
+
+      toggle.addEventListener('click', () => {
+        chatbot.style.display = chatbot.style.display === 'none' ? 'flex' : 'none';
+      });
+
+      input.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission if inside a form
+          const msg = input.value.trim();
+          if (!msg) return;
+
+          appendMessage('You', msg);
+          input.value = '';
+
+          fetch('http://localhost/JobSathi/backend/chatbot.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+          })
+          .then(res => res.json())
+          .then(data => {
+            appendMessage('Bot', data.reply);
+          })
+          .catch(err => {
+            appendMessage('Bot', 'Error connecting to assistant.');
+            console.error(err);
+          });
+        }
+      });
+
+      function appendMessage(sender, text) {
+        const chatBody = document.getElementById('chat-body');
+        const msgDiv = document.createElement('div');
+        msgDiv.textContent = `${sender}: ${text}`;
+        chatBody.appendChild(msgDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+    });
+    </script>
+</body>
+
+</html>
+
+
+<!-- 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  const toggle = document.getElementById('chat-toggle');
+  const chatbot = document.getElementById('chatbot');
+  const input = document.getElementById('chat-input');
+
+  toggle.addEventListener('click', () => {
+    chatbot.style.display = chatbot.style.display === 'none' ? 'flex' : 'none';
+  });
+
+  input.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      appendMessage('You', msg);
+      input.value = '';
+
+      fetch('http://localhost/JobSathi/backend/chatbot.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg })
+      })
+      .then(res => res.json())
+      .then data => {
+        appendMessage('Bot', data.reply);
+      })
+      .catch(err => {
+        appendMessage('Bot', 'Error connecting to assistant.');
+        console.error(err);
+      });
+    }
+  });
+
+  function appendMessage(sender, text) {
+    const chatBody = document.getElementById('chat-body');
+    const msgDiv = document.createElement('div');
+    msgDiv.textContent = `${sender}: ${text}`;
+    chatBody.appendChild(msgDiv);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+});
+
+</script> -->
+
+
+<!-- <div id="chatbox">
+  <div id="messages"></div>
+  <input type="text" id="userInput" placeholder="Ask me anything..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+async function sendMessage() {
+  const userText = document.getElementById("userInput").value;
+  document.getElementById("messages").innerHTML += `<div>User: ${userText}</div>`;
+
+  const response = await fetch("chatbot.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt: userText })
+  });
+
+  const data = await response.json();
+  document.getElementById("messages").innerHTML += `<div>Bot: ${data.reply}</div>`;
+  document.getElementById("userInput").value = "";
+}
+</script> -->
+
+
+
+
