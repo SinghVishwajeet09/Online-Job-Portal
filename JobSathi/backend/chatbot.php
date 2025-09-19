@@ -15,7 +15,7 @@ if (!$question) {
 }
 
 // Gemini API endpoint and key
-$api_key = 'AIzaSyBAR6-2x9Gk_yy5a70a3UnZ1yHWJTF0P5Y'; // <-- Replace with your Gemini API key
+$api_key = '******************************'; // <-- Replace with your Gemini API key
 $endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' . $api_key;
 
 // Prepare the payload for Gemini
@@ -60,5 +60,6 @@ if (isset($result['candidates'][0]['content']['parts'][0]['text'])) {
 echo json_encode(['reply' => $reply]);
 
 file_put_contents("log.txt", $response);
+
 
 ?>
