@@ -15,7 +15,7 @@ if (!$question) {
 }
 
 // Gemini API endpoint and key
-$api_key = '******************************'; // <-- Replace with your Gemini API key
+$api_key = 'Your Api HERE'; // <-- Replace with your Gemini API key
 $endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' . $api_key;
 
 // Prepare the payload for Gemini
@@ -63,3 +63,4 @@ file_put_contents("log.txt", $response);
 
 
 ?>
+
